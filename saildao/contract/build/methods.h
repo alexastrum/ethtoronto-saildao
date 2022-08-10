@@ -1,0 +1,4 @@
+DEFINE_NEAR_METHOD(book)
+DEFINE_NEAR_METHOD(get_booking)
+DEFINE_NEAR_METHOD(get_booking_cost)
+DEFINE_NEAR_METHOD(init)
