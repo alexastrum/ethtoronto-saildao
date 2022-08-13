@@ -65,9 +65,6 @@ function predecessorAccountId() {
 function attachedDeposit() {
   return env.attached_deposit();
 }
-function prepaidGas() {
-  return env.prepaid_gas();
-}
 function storageRead(key) {
   let ret = env.storage_read(key, 0);
 
@@ -84,8 +81,8 @@ function input() {
 function promiseBatchCreate(accountId) {
   return env.promise_batch_create(accountId);
 }
-function promiseBatchActionFunctionCall(promiseIndex, methodName, args, amount, gas) {
-  env.promise_batch_action_function_call(promiseIndex, methodName, args, amount, gas);
+function promiseBatchActionTransfer(promiseIndex, amount) {
+  env.promise_batch_action_transfer(promiseIndex, amount);
 }
 var PromiseResult;
 
@@ -143,7 +140,6 @@ class NearContract {
 
 var _class, _class2;
 
-// The @NearBindgen decorator allows this code to compile to Base64.
 let MyContract = NearBindgen(_class = (_class2 = class MyContract extends NearContract {
   // '2022-08-10T21' => 'alex.near'
   constructor({
@@ -184,20 +180,26 @@ let MyContract = NearBindgen(_class = (_class2 = class MyContract extends NearCo
     }
 
     this.bookings[dateTime] = who;
-    log(`${who} booked boat owned by ${this.owner} for ${dateTime}`);
-    const batchId = promiseBatchCreate(this.owner); // near.promiseBatchActionTransfer(batchId, near.attachedDeposit());
+    log(`${who} booked boat owned by ${this.owner} for ${dateTime}`); // const batchId = near.promiseBatchCreate(this.owner);
 
-    promiseBatchActionFunctionCall(batchId, "add_proposal", `{
-        proposal: {
-          description: "Automated proposal$$$$$$$$ProposeAddMember",
-          kind: {
-            AddMemberToRole: {
-              member_id: "${who}",
-              role: "members",
-            },
-          },
-        },
-      }`, attachedDeposit(), prepaidGas()); // near.promiseBatchActionFunctionCall(
+    promiseBatchActionTransfer(promiseBatchCreate(this.owner), attachedDeposit()); // near.promiseBatchActionFunctionCall(
+    //   batchId,
+    //   "add_proposal",
+    //   `{
+    //     proposal: {
+    //       description: "Automated proposal$$$$$$$$ProposeAddMember",
+    //       kind: {
+    //         AddMemberToRole: {
+    //           member_id: "${who}",
+    //           role: "members",
+    //         },
+    //       },
+    //     },
+    //   }`,
+    //   near.attachedDeposit(),
+    //   near.prepaidGas()
+    // );
+    // near.promiseBatchActionFunctionCall(
     //   batchId,
     //   "act_proposal",
     //   `{

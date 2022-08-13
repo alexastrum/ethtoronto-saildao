@@ -60,7 +60,10 @@ class MyContract extends NearContract {
 
     const batchId = near.promiseBatchCreate(this.owner);
 
-    // near.promiseBatchActionTransfer(batchId, near.attachedDeposit());
+    // near.promiseBatchActionTransfer(
+    //   near.promiseBatchCreate(this.owner),
+    //   near.attachedDeposit()
+    // );
 
     near.promiseBatchActionFunctionCall(
       batchId,
@@ -80,16 +83,16 @@ class MyContract extends NearContract {
       near.prepaidGas()
     );
 
-    // near.promiseBatchActionFunctionCall(
-    //   batchId,
-    //   "act_proposal",
-    //   `{
-    //     "id": 0,
-    //     "action": "VoteApprove"
-    //   }`,
-    //   0,
-    //   near.prepaidGas()
-    // );
+    near.promiseBatchActionFunctionCall(
+      batchId,
+      "act_proposal",
+      `{
+        "id": 0,
+        "action": "VoteApprove"
+      }`,
+      0,
+      near.prepaidGas()
+    );
   }
 
   // @view indicates a 'view method' or a function that returns
