@@ -145,7 +145,7 @@ let MyContract = NearBindgen(_class = (_class2 = class MyContract extends NearCo
   constructor({
     bookingCost = "1000000000000000000000000",
     // 1Ⓝ
-    owner = "sail.sputnikv2.testnet" // near.predecessorAccountId()
+    owner = "sail-dao.sputnikv2.testnet" // near.predecessorAccountId()
 
   }) {
     //execute the NEAR Contract's constructor
@@ -180,9 +180,9 @@ let MyContract = NearBindgen(_class = (_class2 = class MyContract extends NearCo
     }
 
     this.bookings[dateTime] = who;
-    log(`${who} booked boat owned by ${this.owner} for ${dateTime}`); // const batchId = near.promiseBatchCreate(this.owner);
-
-    promiseBatchActionTransfer(promiseBatchCreate(this.owner), attachedDeposit()); // near.promiseBatchActionFunctionCall(
+    log(`${who} booked boat owned by ${this.owner} for ${dateTime}`);
+    promiseBatchActionTransfer(promiseBatchCreate(this.owner), attachedDeposit()); // const batchId = near.promiseBatchCreate(this.owner);
+    // near.promiseBatchActionFunctionCall(
     //   batchId,
     //   "add_proposal",
     //   `{

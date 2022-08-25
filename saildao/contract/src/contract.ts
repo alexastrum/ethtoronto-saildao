@@ -3,19 +3,23 @@ import { NearBindgen, NearContract, near, call, view } from "near-sdk-js";
 // The @NearBindgen decorator allows this code to compile to Base64.
 @NearBindgen
 class MyContract extends NearContract {
+  proposalCreationCost: string;
   bookingCost: string;
   bookings: { [dateTime: string]: string }; // '2022-08-10T21' => 'alex.near'
   owner: string;
 
   constructor({
+    proposalCreationCost = "100000000000000000000000", // 0.1Ⓝ
     bookingCost = "1000000000000000000000000", // 1Ⓝ
-    owner = "sail.sputnikv2.testnet", // near.predecessorAccountId()
+    owner = "sail-dao.sputnikv2.testnet", // near.predecessorAccountId()
   }: {
     owner?: string;
     bookingCost?: string;
+    proposalCreationCost?: string;
   }) {
     //execute the NEAR Contract's constructor
     super();
+    this.proposalCreationCost = proposalCreationCost;
     this.bookingCost = bookingCost;
     this.bookings = {};
     this.owner = owner;
@@ -58,12 +62,18 @@ class MyContract extends NearContract {
     this.bookings[dateTime] = who;
     near.log(`${who} booked boat owned by ${this.owner} for ${dateTime}`);
 
-    const batchId = near.promiseBatchCreate(this.owner);
-
     // near.promiseBatchActionTransfer(
     //   near.promiseBatchCreate(this.owner),
     //   near.attachedDeposit()
     // );
+
+    const batchId = near.promiseBatchCreate(this.owner);
+    const proposalCost = BigInt(this.proposalCreationCost);
+
+    near.promiseBatchActionTransfer(
+      batchId,
+      (near.attachedDeposit() as bigint) - proposalCost
+    );
 
     near.promiseBatchActionFunctionCall(
       batchId,
@@ -79,8 +89,8 @@ class MyContract extends NearContract {
           },
         },
       }`,
-      near.attachedDeposit(),
-      near.prepaidGas()
+      proposalCost,
+      0 //near.prepaidGas() / 10
     );
 
     near.promiseBatchActionFunctionCall(
@@ -91,7 +101,7 @@ class MyContract extends NearContract {
         "action": "VoteApprove"
       }`,
       0,
-      near.prepaidGas()
+      0 //near.prepaidGas() / 10
     );
   }
 
